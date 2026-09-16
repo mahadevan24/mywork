@@ -44,4 +44,5 @@ export interface FirebaseSettings {
   storageBucket?: string;
   messagingSenderId?: string;
   appId: string;
+  measurementId?: string;
 }

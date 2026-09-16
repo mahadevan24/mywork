@@ -43,6 +43,9 @@ export const FirebaseModal: React.FC<FirebaseModalProps> = ({
     currentSettings?.messagingSenderId || ""
   );
   const [appId, setAppId] = useState(currentSettings?.appId || "");
+  const [measurementId, setMeasurementId] = useState(
+    currentSettings?.measurementId || ""
+  );
   const [isSaving, setIsSaving] = useState(false);
   const [statusMessage, setStatusMessage] = useState<string | null>(null);
 
@@ -65,6 +68,7 @@ export const FirebaseModal: React.FC<FirebaseModalProps> = ({
       storageBucket: storageBucket.trim(),
       messagingSenderId: messagingSenderId.trim(),
       appId: appId.trim(),
+      measurementId: measurementId.trim(),
     });
 
     setIsSaving(false);
@@ -201,6 +205,19 @@ export const FirebaseModal: React.FC<FirebaseModalProps> = ({
               </div>
             </div>
 
+            <div>
+              <label className="block text-[11px] font-mono text-slate-400 mb-1">
+                Measurement ID (Optional)
+              </label>
+              <input
+                type="text"
+                value={measurementId}
+                onChange={(e) => setMeasurementId(e.target.value)}
+                placeholder="G-XXXXXXX"
+                className="w-full px-3 py-1.5 text-xs font-mono rounded-lg bg-slate-800/80 border border-slate-700 text-slate-200 placeholder-slate-600 focus:outline-none focus:border-indigo-500"
+              />
+            </div>
+
             <div className="pt-2 flex items-center justify-between">
               {isConnected ? (
                 <button
@@ -211,6 +228,7 @@ export const FirebaseModal: React.FC<FirebaseModalProps> = ({
                     setProjectId("");
                     setAuthDomain("");
                     setAppId("");
+                    setMeasurementId("");
                   }}
                   className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-mono text-rose-400 hover:text-rose-300 hover:bg-rose-950/30 rounded-lg border border-rose-900/50 transition"
                 >
@@ -219,7 +237,7 @@ export const FirebaseModal: React.FC<FirebaseModalProps> = ({
                 </button>
               ) : (
                 <span className="text-[11px] text-slate-500 font-mono">
-                  Or set in <code>.env.local</code>
+                  Configured via <code>.env</code>
                 </span>
               )}
 
