@@ -355,7 +355,7 @@ export default function Home() {
       <footer className="h-7 shrink-0 bg-white/95 dark:bg-slate-950/95 border-t border-slate-200 dark:border-slate-800/80 px-3 text-[11px] font-mono text-slate-500 flex items-center justify-between select-none">
         <div className="flex items-center gap-3">
           <span className="text-slate-600 dark:text-slate-400">
-            DevNotes WorkPad • Zero-Scroll Direct Workspace
+            MyWork • Zero-Scroll Direct Workspace
           </span>
           <span className="text-slate-300 dark:text-slate-700 hidden sm:inline">•</span>
           <span className="hidden md:inline text-slate-500">

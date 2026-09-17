@@ -10,7 +10,7 @@ import {
   LayoutGrid,
   Sun,
   Moon,
-  Sparkles,
+  Briefcase,
   Settings,
   Download,
   Upload,
@@ -63,13 +63,13 @@ export const Navbar: React.FC<NavbarProps> = ({
         <div className="flex items-center justify-between h-13 py-1.5 gap-3">
           {/* Brand Logo & Name */}
           <div className="flex items-center gap-2.5 shrink-0">
-            <div className="h-8 w-8 rounded-lg bg-gradient-to-br from-indigo-500 to-cyan-500 flex items-center justify-center shadow-md shadow-indigo-500/20">
-              <Sparkles className="w-4 h-4 text-white" />
+            <div className="h-8 w-8 rounded-lg bg-indigo-600 flex items-center justify-center shadow-md shadow-indigo-600/20">
+              <Briefcase className="w-4 h-4 text-white" />
             </div>
             <div>
               <div className="flex items-center gap-1.5">
                 <span className="font-bold text-base tracking-tight text-slate-900 dark:text-white font-mono">
-                  DevNotes
+                  MyWork
                 </span>
                 <span className="text-[10px] px-1.5 py-0.2 rounded-full bg-indigo-50 dark:bg-indigo-950 text-indigo-600 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-800/60 font-mono font-medium">
                   v2.0

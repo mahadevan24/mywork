@@ -51,7 +51,7 @@ export const ImportExportModal: React.FC<ImportExportModalProps> = ({
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
     a.href = url;
-    a.download = `devnotes_backup_${new Date().toISOString().slice(0, 10)}.txt`;
+    a.download = `mywork_backup_${new Date().toISOString().slice(0, 10)}.txt`;
     a.click();
     URL.revokeObjectURL(url);
   };
@@ -77,7 +77,7 @@ export const ImportExportModal: React.FC<ImportExportModalProps> = ({
                 Notepad Import & Export
               </h3>
               <p className="text-xs text-slate-500 dark:text-slate-400">
-                Move notes freely between DevNotes and your desktop Notepad
+                Move notes freely between MyWork and your desktop Notepad
               </p>
             </div>
           </div>

@@ -1,4 +1,4 @@
-# DevNotes / WorkPad 🚀
+# MyWork 💼
 
 A modern, fast, developer-centric work notes and task pipeline built with **Next.js 14**, **Tailwind CSS**, and **Firebase (Firestore)**.
 
