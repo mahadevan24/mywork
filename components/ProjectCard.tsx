@@ -32,6 +32,7 @@ interface ProjectCardProps {
   onDeleteSection: (sectionId: string) => void;
   onUpdateNotes: (sectionId: string, notes: string) => void;
   searchQuery?: string;
+  className?: string;
 }
 
 export const ProjectCard: React.FC<ProjectCardProps> = ({
@@ -43,6 +44,7 @@ export const ProjectCard: React.FC<ProjectCardProps> = ({
   onDeleteSection,
   onUpdateNotes,
   searchQuery = "",
+  className = "",
 }) => {
   const [isCollapsed, setIsCollapsed] = useState(false);
   const [showNotes, setShowNotes] = useState(Boolean(section.notes));
@@ -51,6 +53,7 @@ export const ProjectCard: React.FC<ProjectCardProps> = ({
   const [newPriority, setNewPriority] = useState<Priority>("normal");
   const [newSubtask, setNewSubtask] = useState("");
   const [addingSubtaskId, setAddingSubtaskId] = useState<string | null>(null);
+  const [taskFilter, setTaskFilter] = useState<"all" | "active" | "completed">("all");
 
   const completedTasks = section.tasks.filter((t) => t.completed).length;
   const totalTasks = section.tasks.length;
@@ -84,32 +87,38 @@ export const ProjectCard: React.FC<ProjectCardProps> = ({
   };
 
   const filteredTasks = section.tasks.filter((t) => {
-    if (!searchQuery) return true;
-    const match =
-      t.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      t.tags?.some((tag) => tag.toLowerCase().includes(searchQuery.toLowerCase())) ||
-      t.subtasks?.some((st) =>
-        st.title.toLowerCase().includes(searchQuery.toLowerCase())
-      );
-    return match;
+    if (searchQuery) {
+      const match =
+        t.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        t.tags?.some((tag) => tag.toLowerCase().includes(searchQuery.toLowerCase())) ||
+        t.subtasks?.some((st) =>
+          st.title.toLowerCase().includes(searchQuery.toLowerCase())
+        );
+      if (!match) return false;
+    }
+    if (taskFilter === "active") return !t.completed;
+    if (taskFilter === "completed") return t.completed;
+    return true;
   });
 
   return (
-    <div className="bg-slate-900/90 rounded-xl border border-slate-800 shadow-md overflow-hidden flex flex-col transition hover:border-slate-700/80">
+    <div
+      className={`bg-white dark:bg-slate-900/90 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm overflow-hidden flex flex-col transition hover:border-slate-300 dark:hover:border-slate-700/80 ${className}`}
+    >
       {/* Card Header */}
-      <div className="p-4 border-b border-slate-800/80 bg-slate-850/50">
+      <div className="p-4 border-b border-slate-200 dark:border-slate-800/80 bg-slate-50 dark:bg-slate-850/50">
         <div className="flex items-start justify-between gap-3">
           <div className="flex items-center gap-2.5 flex-1 min-w-0">
             {/* Color Accent Indicator */}
             <div
-              className="w-2.5 h-7 rounded-full shrink-0"
+              className="w-2.5 h-7 rounded-full shrink-0 shadow-sm"
               style={{ backgroundColor: section.color || "#6366f1" }}
             />
             <div className="min-w-0">
-              <h3 className="text-base font-bold text-slate-100 truncate font-mono tracking-tight">
+              <h3 className="text-base font-bold text-slate-900 dark:text-slate-100 truncate font-mono tracking-tight">
                 {section.title}
               </h3>
-              <div className="flex items-center gap-2 text-xs text-slate-400 font-mono mt-0.5">
+              <div className="flex items-center gap-2 text-xs text-slate-500 dark:text-slate-400 font-mono mt-0.5">
                 <span>
                   {completedTasks}/{totalTasks} completed
                 </span>
@@ -117,8 +126,8 @@ export const ProjectCard: React.FC<ProjectCardProps> = ({
                 <span
                   className={
                     progressPercent === 100
-                      ? "text-emerald-400 font-medium"
-                      : "text-indigo-400"
+                      ? "text-emerald-600 dark:text-emerald-400 font-medium"
+                      : "text-indigo-600 dark:text-indigo-400"
                   }
                 >
                   {progressPercent}%
@@ -132,8 +141,8 @@ export const ProjectCard: React.FC<ProjectCardProps> = ({
               onClick={() => setShowNotes(!showNotes)}
               className={`p-1.5 rounded-md text-xs font-mono transition flex items-center gap-1 ${
                 showNotes
-                  ? "bg-indigo-950/80 text-indigo-300 border border-indigo-800/60"
-                  : "text-slate-400 hover:text-slate-200 hover:bg-slate-800"
+                  ? "bg-indigo-50 dark:bg-indigo-950/80 text-indigo-700 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-800/60"
+                  : "text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 hover:bg-slate-200/60 dark:hover:bg-slate-800"
               }`}
               title="Toggle project notes / scratchpad"
             >
@@ -142,7 +151,7 @@ export const ProjectCard: React.FC<ProjectCardProps> = ({
 
             <button
               onClick={() => setIsCollapsed(!isCollapsed)}
-              className="p-1.5 text-slate-400 hover:text-slate-200 hover:bg-slate-800 rounded-md transition"
+              className="p-1.5 text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 hover:bg-slate-200/60 dark:hover:bg-slate-800 rounded-md transition"
               title={isCollapsed ? "Expand section" : "Collapse section"}
             >
               {isCollapsed ? (
@@ -158,7 +167,7 @@ export const ProjectCard: React.FC<ProjectCardProps> = ({
                   onDeleteSection(section.id);
                 }
               }}
-              className="p-1.5 text-slate-500 hover:text-rose-400 hover:bg-slate-800 rounded-md transition"
+              className="p-1.5 text-slate-400 hover:text-rose-600 dark:text-slate-500 dark:hover:text-rose-400 hover:bg-slate-200/60 dark:hover:bg-slate-800 rounded-md transition"
               title="Delete Section"
             >
               <Trash2 className="w-3.5 h-3.5" />
@@ -167,7 +176,7 @@ export const ProjectCard: React.FC<ProjectCardProps> = ({
         </div>
 
         {/* Progress Bar */}
-        <div className="w-full bg-slate-800 h-1 rounded-full mt-3 overflow-hidden">
+        <div className="w-full bg-slate-200 dark:bg-slate-800 h-1 rounded-full mt-3 overflow-hidden">
           <div
             className={`h-full transition-all duration-300 ${
               progressPercent === 100 ? "bg-emerald-500" : "bg-indigo-500"
@@ -179,9 +188,9 @@ export const ProjectCard: React.FC<ProjectCardProps> = ({
 
       {/* Optional Freeform Section Notes */}
       {showNotes && (
-        <div className="p-3 bg-slate-950/60 border-b border-slate-800/60">
+        <div className="p-3 bg-slate-50/70 dark:bg-slate-950/60 border-b border-slate-200 dark:border-slate-800/60">
           <div className="flex items-center justify-between mb-1">
-            <span className="text-[11px] font-mono text-slate-400">
+            <span className="text-[11px] font-mono text-slate-500 dark:text-slate-400">
               {"// Section memo / pipeline notes"}
             </span>
           </div>
@@ -190,20 +199,64 @@ export const ProjectCard: React.FC<ProjectCardProps> = ({
             onChange={(e) => setNotesContent(e.target.value)}
             onBlur={handleNotesBlur}
             placeholder="Add context, URLs, branch notes, or pipeline details here..."
-            className="w-full h-16 p-2 text-xs font-mono rounded bg-slate-900 border border-slate-800 text-slate-200 placeholder-slate-600 focus:outline-none focus:border-indigo-500/80 resize-y"
+            className="w-full h-16 p-2 text-xs font-mono rounded bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-slate-800 dark:text-slate-200 placeholder-slate-400 dark:placeholder-slate-600 focus:outline-none focus:border-indigo-500/80 resize-y"
           />
         </div>
       )}
 
       {/* Task List Body */}
       {!isCollapsed && (
-        <div className="p-4 flex-1 flex flex-col justify-between space-y-3">
+        <div className="p-4 flex-1 flex flex-col justify-between space-y-3 overflow-hidden">
+          {/* Tasks Header & Filter Tabs */}
+          <div className="flex items-center justify-between text-xs font-mono pb-2 border-b border-slate-200 dark:border-slate-800/60 shrink-0">
+            <span className="text-[10px] uppercase font-semibold tracking-wider text-slate-500 dark:text-slate-400">
+              Tasks
+            </span>
+            <div className="flex items-center gap-0.5 bg-slate-100 dark:bg-slate-950/70 p-0.5 rounded-lg border border-slate-200 dark:border-slate-800/80">
+              <button
+                type="button"
+                onClick={() => setTaskFilter("all")}
+                className={`px-2 py-0.5 rounded text-[10px] transition ${
+                  taskFilter === "all"
+                    ? "bg-indigo-600 text-white font-medium shadow-sm"
+                    : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200"
+                }`}
+              >
+                All
+              </button>
+              <button
+                type="button"
+                onClick={() => setTaskFilter("active")}
+                className={`px-2 py-0.5 rounded text-[10px] transition ${
+                  taskFilter === "active"
+                    ? "bg-indigo-600 text-white font-medium shadow-sm"
+                    : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200"
+                }`}
+              >
+                Active ({totalTasks - completedTasks})
+              </button>
+              <button
+                type="button"
+                onClick={() => setTaskFilter("completed")}
+                className={`px-2 py-0.5 rounded text-[10px] transition ${
+                  taskFilter === "completed"
+                    ? "bg-indigo-600 text-white font-medium shadow-sm"
+                    : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200"
+                }`}
+              >
+                Done ({completedTasks})
+              </button>
+            </div>
+          </div>
+
           {/* Tasks Container */}
-          <div className="space-y-2">
+          <div className="flex-1 overflow-y-auto space-y-2 pr-1">
             {filteredTasks.length === 0 ? (
-              <div className="py-6 text-center text-xs text-slate-500 font-mono italic">
+              <div className="py-6 text-center text-xs text-slate-400 dark:text-slate-500 font-mono italic">
                 {searchQuery
                   ? "No tasks match your search."
+                  : taskFilter !== "all"
+                  ? `No ${taskFilter} items in this section.`
                   : "No items yet. Add one below!"}
               </div>
             ) : (
@@ -212,12 +265,12 @@ export const ProjectCard: React.FC<ProjectCardProps> = ({
                   key={task.id}
                   className={`group rounded-lg border p-2.5 transition-all ${
                     task.completed
-                      ? "bg-slate-950/40 border-slate-800/60 opacity-65"
+                      ? "bg-slate-50/50 border-slate-200 dark:bg-slate-950/40 dark:border-slate-800/60 opacity-65"
                       : task.priority === "urgent"
-                      ? "bg-rose-950/20 border-rose-900/60"
+                      ? "bg-rose-50 border-rose-200 dark:bg-rose-950/20 dark:border-rose-900/60"
                       : task.priority === "high"
-                      ? "bg-amber-950/20 border-amber-900/50"
-                      : "bg-slate-800/40 border-slate-800/80 hover:border-slate-700"
+                      ? "bg-amber-50 border-amber-200 dark:bg-amber-950/20 dark:border-amber-900/50"
+                      : "bg-slate-50/70 border-slate-200 hover:border-slate-300 dark:bg-slate-800/40 dark:border-slate-800/80 dark:hover:border-slate-700"
                   }`}
                 >
                   <div className="flex items-start justify-between gap-2">
@@ -227,12 +280,12 @@ export const ProjectCard: React.FC<ProjectCardProps> = ({
                     >
                       <button
                         type="button"
-                        className="mt-0.5 text-slate-400 hover:text-indigo-400 shrink-0"
+                        className="mt-0.5 text-slate-400 hover:text-indigo-600 dark:hover:text-indigo-400 shrink-0"
                       >
                         {task.completed ? (
-                          <CheckCircle2 className="w-4 h-4 text-emerald-400" />
+                          <CheckCircle2 className="w-4 h-4 text-emerald-500 dark:text-emerald-400" />
                         ) : (
-                          <Circle className="w-4 h-4 text-slate-500 hover:text-slate-300" />
+                          <Circle className="w-4 h-4 text-slate-400 dark:text-slate-500 hover:text-slate-600 dark:hover:text-slate-300" />
                         )}
                       </button>
 
@@ -240,10 +293,10 @@ export const ProjectCard: React.FC<ProjectCardProps> = ({
                         <span
                           className={`text-xs font-mono leading-relaxed break-words block ${
                             task.completed
-                              ? "line-through text-slate-500"
+                              ? "line-through text-slate-400 dark:text-slate-500"
                               : task.priority === "urgent"
-                              ? "text-rose-200 font-medium"
-                              : "text-slate-200"
+                              ? "text-rose-900 dark:text-rose-200 font-medium"
+                              : "text-slate-800 dark:text-slate-200"
                           }`}
                         >
                           {task.title}
@@ -252,17 +305,17 @@ export const ProjectCard: React.FC<ProjectCardProps> = ({
                         {/* Badges */}
                         <div className="flex flex-wrap items-center gap-1.5 mt-1.5">
                           {task.completed && (
-                            <span className="text-[10px] px-1.5 py-0.2 rounded bg-emerald-950 text-emerald-400 border border-emerald-800/60 font-mono">
+                            <span className="text-[10px] px-1.5 py-0.2 rounded bg-emerald-100 text-emerald-700 border border-emerald-200 dark:bg-emerald-950 dark:text-emerald-400 dark:border-emerald-800/60 font-mono">
                               (done)
                             </span>
                           )}
                           {task.priority === "urgent" && (
-                            <span className="text-[10px] px-1.5 py-0.2 rounded bg-rose-950 text-rose-400 border border-rose-800/60 font-mono font-semibold">
+                            <span className="text-[10px] px-1.5 py-0.2 rounded bg-rose-100 text-rose-700 border border-rose-200 dark:bg-rose-950 dark:text-rose-400 dark:border-rose-800/60 font-mono font-semibold">
                               URGENT 🔥
                             </span>
                           )}
                           {task.priority === "high" && (
-                            <span className="text-[10px] px-1.5 py-0.2 rounded bg-amber-950 text-amber-400 border border-amber-800/60 font-mono">
+                            <span className="text-[10px] px-1.5 py-0.2 rounded bg-amber-100 text-amber-700 border border-amber-200 dark:bg-amber-950 dark:text-amber-400 dark:border-amber-800/60 font-mono">
                               HIGH
                             </span>
                           )}
@@ -270,7 +323,7 @@ export const ProjectCard: React.FC<ProjectCardProps> = ({
                             task.tags.map((tg) => (
                               <span
                                 key={tg}
-                                className="text-[10px] px-1.5 py-0.2 rounded bg-slate-800 text-slate-400 font-mono"
+                                className="text-[10px] px-1.5 py-0.2 rounded bg-slate-100 text-slate-600 border border-slate-200 dark:border-transparent dark:bg-slate-800 dark:text-slate-400 font-mono"
                               >
                                 #{tg}
                               </span>
@@ -286,14 +339,14 @@ export const ProjectCard: React.FC<ProjectCardProps> = ({
                             addingSubtaskId === task.id ? null : task.id
                           )
                         }
-                        className="p-1 text-slate-400 hover:text-indigo-400 rounded transition"
+                        className="p-1 text-slate-400 hover:text-indigo-600 dark:text-slate-400 dark:hover:text-indigo-400 rounded transition"
                         title="Add subtask / detail"
                       >
                         <CornerDownRight className="w-3.5 h-3.5" />
                       </button>
                       <button
                         onClick={() => onDeleteTask(section.id, task.id)}
-                        className="p-1 text-slate-500 hover:text-rose-400 rounded transition"
+                        className="p-1 text-slate-400 hover:text-rose-600 dark:text-slate-500 dark:hover:text-rose-400 rounded transition"
                         title="Delete task"
                       >
                         <Trash2 className="w-3.5 h-3.5" />
@@ -303,7 +356,7 @@ export const ProjectCard: React.FC<ProjectCardProps> = ({
 
                   {/* Subtasks (e.g. pipeline details, commands) */}
                   {task.subtasks && task.subtasks.length > 0 && (
-                    <div className="mt-2.5 ml-6 space-y-1.5 pl-2 border-l-2 border-slate-700/60">
+                    <div className="mt-2.5 ml-6 space-y-1.5 pl-2 border-l-2 border-slate-200 dark:border-slate-700/60">
                       {task.subtasks.map((sub) => (
                         <div
                           key={sub.id}
@@ -314,16 +367,16 @@ export const ProjectCard: React.FC<ProjectCardProps> = ({
                         >
                           <button type="button" className="mt-0.5 shrink-0">
                             {sub.completed ? (
-                              <CheckCircle2 className="w-3 h-3 text-emerald-400" />
+                              <CheckCircle2 className="w-3 h-3 text-emerald-500 dark:text-emerald-400" />
                             ) : (
-                              <Circle className="w-3 h-3 text-slate-500 hover:text-slate-300" />
+                              <Circle className="w-3 h-3 text-slate-400 dark:text-slate-500 hover:text-slate-600 dark:hover:text-slate-300" />
                             )}
                           </button>
                           <span
                             className={`text-[11px] font-mono leading-tight break-words ${
                               sub.completed
-                                ? "line-through text-slate-500"
-                                : "text-slate-300 hover:text-slate-100"
+                                ? "line-through text-slate-400 dark:text-slate-500"
+                                : "text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:hover:text-slate-100"
                             }`}
                           >
                             {sub.title}
@@ -361,7 +414,7 @@ export const ProjectCard: React.FC<ProjectCardProps> = ({
                           }
                         }}
                         placeholder="Add subtask (e.g., 'check params for branch')..."
-                        className="flex-1 px-2 py-1 text-[11px] font-mono rounded bg-slate-900 border border-slate-700 text-slate-200 focus:outline-none focus:border-indigo-500"
+                        className="flex-1 px-2 py-1 text-[11px] font-mono rounded bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 text-slate-800 dark:text-slate-200 focus:outline-none focus:border-indigo-500"
                         autoFocus
                       />
                       <button
@@ -383,13 +436,13 @@ export const ProjectCard: React.FC<ProjectCardProps> = ({
                             setAddingSubtaskId(null);
                           }
                         }}
-                        className="px-2 py-1 text-[10px] bg-indigo-600 hover:bg-indigo-500 text-white rounded font-mono"
+                        className="px-2 py-1 text-[10px] bg-indigo-600 hover:bg-indigo-500 text-white rounded font-mono shadow-sm"
                       >
                         Add
                       </button>
                       <button
                         onClick={() => setAddingSubtaskId(null)}
-                        className="px-1.5 py-1 text-[10px] text-slate-400 hover:text-white"
+                        className="px-1.5 py-1 text-[10px] text-slate-500 hover:text-slate-800 dark:text-slate-400 dark:hover:text-white"
                       >
                         Cancel
                       </button>
@@ -409,12 +462,12 @@ export const ProjectCard: React.FC<ProjectCardProps> = ({
                   value={newTaskTitle}
                   onChange={(e) => setNewTaskTitle(e.target.value)}
                   placeholder={`+ Add item to ${section.title}...`}
-                  className="w-full pl-3 pr-20 py-1.5 text-xs font-mono rounded-lg bg-slate-800/80 border border-slate-700/80 text-slate-200 placeholder-slate-500 focus:outline-none focus:ring-1 focus:ring-indigo-500 focus:border-indigo-500"
+                  className="w-full pl-3 pr-20 py-1.5 text-xs font-mono rounded-lg bg-slate-50 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700/80 text-slate-800 dark:text-slate-200 placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none focus:ring-1 focus:ring-indigo-500 focus:border-indigo-500 focus:bg-white dark:focus:bg-slate-800"
                 />
                 <select
                   value={newPriority}
                   onChange={(e) => setNewPriority(e.target.value as Priority)}
-                  className="absolute right-1 top-1/2 -translate-y-1/2 text-[10px] bg-slate-900 text-slate-400 border border-slate-700 rounded px-1 py-0.5 cursor-pointer"
+                  className="absolute right-1 top-1/2 -translate-y-1/2 text-[10px] bg-white dark:bg-slate-900 text-slate-700 dark:text-slate-400 border border-slate-200 dark:border-slate-700 rounded px-1 py-0.5 cursor-pointer"
                 >
                   <option value="normal">Normal</option>
                   <option value="high">High</option>
@@ -425,7 +478,7 @@ export const ProjectCard: React.FC<ProjectCardProps> = ({
               <button
                 type="submit"
                 disabled={!newTaskTitle.trim()}
-                className="p-1.5 rounded-lg bg-indigo-600 hover:bg-indigo-500 disabled:opacity-40 text-white transition shrink-0"
+                className="p-1.5 rounded-lg bg-indigo-600 hover:bg-indigo-500 disabled:opacity-40 text-white transition shrink-0 shadow-sm"
                 title="Add task"
               >
                 <Plus className="w-4 h-4" />

@@ -42,25 +42,25 @@ export const NewSectionModal: React.FC<NewSectionModalProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm p-4">
-      <div className="bg-slate-900 border border-slate-800 rounded-2xl max-w-md w-full shadow-2xl overflow-hidden animate-in fade-in zoom-in-95 duration-200">
-        <div className="p-5 border-b border-slate-800 flex items-center justify-between bg-slate-950/60">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 dark:bg-black/70 backdrop-blur-sm p-4">
+      <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl max-w-md w-full shadow-2xl overflow-hidden animate-in fade-in zoom-in-95 duration-200">
+        <div className="p-5 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between bg-slate-50 dark:bg-slate-950/60">
           <div className="flex items-center gap-2.5">
-            <div className="p-2 rounded-lg bg-indigo-500/10 text-indigo-400">
+            <div className="p-2 rounded-lg bg-indigo-500/10 text-indigo-600 dark:text-indigo-400">
               <FolderPlus className="w-5 h-5" />
             </div>
             <div>
-              <h3 className="text-base font-bold text-white font-mono">
+              <h3 className="text-base font-bold text-slate-900 dark:text-white font-mono">
                 Add Work Topic / Project
               </h3>
-              <p className="text-xs text-slate-400">
+              <p className="text-xs text-slate-500 dark:text-slate-400">
                 Creates a new section for your tasks & notes
               </p>
             </div>
           </div>
           <button
             onClick={onClose}
-            className="p-1.5 text-slate-400 hover:text-white rounded-lg hover:bg-slate-800"
+            className="p-1.5 text-slate-400 hover:text-slate-700 dark:hover:text-white rounded-lg hover:bg-slate-200/60 dark:hover:bg-slate-800 transition"
           >
             <X className="w-5 h-5" />
           </button>
@@ -68,7 +68,7 @@ export const NewSectionModal: React.FC<NewSectionModalProps> = ({
 
         <form onSubmit={handleSubmit} className="p-5 space-y-4">
           <div>
-            <label className="block text-xs font-mono text-slate-400 mb-1">
+            <label className="block text-xs font-mono text-slate-600 dark:text-slate-400 mb-1">
               Topic / Project Title *
             </label>
             <input
@@ -78,12 +78,12 @@ export const NewSectionModal: React.FC<NewSectionModalProps> = ({
               placeholder="e.g., Kubernetes Cluster Migration, Sprint 42"
               required
               autoFocus
-              className="w-full px-3 py-2 text-xs font-mono rounded-lg bg-slate-800 border border-slate-700 text-slate-200 placeholder-slate-600 focus:outline-none focus:border-indigo-500"
+              className="w-full px-3 py-2 text-xs font-mono rounded-lg bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-slate-200 placeholder-slate-400 dark:placeholder-slate-600 focus:outline-none focus:border-indigo-500 focus:bg-white dark:focus:bg-slate-800"
             />
           </div>
 
           <div>
-            <label className="block text-xs font-mono text-slate-400 mb-2">
+            <label className="block text-xs font-mono text-slate-600 dark:text-slate-400 mb-2">
               Accent Color
             </label>
             <div className="flex items-center gap-2 flex-wrap">
@@ -94,7 +94,7 @@ export const NewSectionModal: React.FC<NewSectionModalProps> = ({
                   onClick={() => setColor(c)}
                   style={{ backgroundColor: c }}
                   className={`w-7 h-7 rounded-full transition transform hover:scale-110 flex items-center justify-center ${
-                    color === c ? "ring-2 ring-white ring-offset-2 ring-offset-slate-900 scale-105" : ""
+                    color === c ? "ring-2 ring-indigo-500 dark:ring-white ring-offset-2 ring-offset-white dark:ring-offset-slate-900 scale-105" : ""
                   }`}
                 />
               ))}
@@ -102,14 +102,14 @@ export const NewSectionModal: React.FC<NewSectionModalProps> = ({
           </div>
 
           <div>
-            <label className="block text-xs font-mono text-slate-400 mb-1">
+            <label className="block text-xs font-mono text-slate-600 dark:text-slate-400 mb-1">
               Optional Description / Context
             </label>
             <textarea
               value={description}
               onChange={(e) => setDescription(e.target.value)}
               placeholder="Summary or milestone goal for this section..."
-              className="w-full h-18 p-2.5 text-xs font-mono rounded-lg bg-slate-800 border border-slate-700 text-slate-200 placeholder-slate-600 focus:outline-none focus:border-indigo-500 resize-none"
+              className="w-full h-18 p-2.5 text-xs font-mono rounded-lg bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-slate-200 placeholder-slate-400 dark:placeholder-slate-600 focus:outline-none focus:border-indigo-500 focus:bg-white dark:focus:bg-slate-800 resize-none"
             />
           </div>
 
@@ -117,14 +117,14 @@ export const NewSectionModal: React.FC<NewSectionModalProps> = ({
             <button
               type="button"
               onClick={onClose}
-              className="px-3 py-1.5 text-xs font-mono text-slate-400 hover:text-slate-200 rounded-lg hover:bg-slate-800"
+              className="px-3 py-1.5 text-xs font-mono text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 transition"
             >
               Cancel
             </button>
             <button
               type="submit"
               disabled={!title.trim()}
-              className="px-4 py-1.5 text-xs font-mono font-medium rounded-lg bg-indigo-600 hover:bg-indigo-500 disabled:opacity-50 text-white transition"
+              className="px-4 py-1.5 text-xs font-mono font-medium rounded-lg bg-indigo-600 hover:bg-indigo-500 disabled:opacity-50 text-white transition shadow-sm"
             >
               Create Topic Section
             </button>

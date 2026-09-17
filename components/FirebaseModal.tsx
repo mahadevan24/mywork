@@ -83,26 +83,26 @@ export const FirebaseModal: React.FC<FirebaseModalProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm p-4">
-      <div className="bg-slate-900 border border-slate-800 rounded-2xl max-w-lg w-full shadow-2xl overflow-hidden animate-in fade-in zoom-in-95 duration-200">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 dark:bg-black/70 backdrop-blur-sm p-4">
+      <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl max-w-lg w-full shadow-2xl overflow-hidden animate-in fade-in zoom-in-95 duration-200">
         {/* Header */}
-        <div className="p-5 border-b border-slate-800 flex items-center justify-between bg-slate-950/60">
+        <div className="p-5 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between bg-slate-50 dark:bg-slate-950/60">
           <div className="flex items-center gap-2.5">
-            <div className="p-2 rounded-lg bg-indigo-500/10 text-indigo-400">
+            <div className="p-2 rounded-lg bg-indigo-500/10 text-indigo-600 dark:text-indigo-400">
               <Cloud className="w-5 h-5" />
             </div>
             <div>
-              <h3 className="text-base font-bold text-white font-mono">
+              <h3 className="text-base font-bold text-slate-900 dark:text-white font-mono">
                 Firebase Cloud Sync Settings
               </h3>
-              <p className="text-xs text-slate-400">
+              <p className="text-xs text-slate-500 dark:text-slate-400">
                 Sync work notes in real time across any browser or phone
               </p>
             </div>
           </div>
           <button
             onClick={onClose}
-            className="p-1.5 text-slate-400 hover:text-white rounded-lg hover:bg-slate-800"
+            className="p-1.5 text-slate-400 hover:text-slate-700 dark:hover:text-white rounded-lg hover:bg-slate-200/60 dark:hover:bg-slate-800 transition"
           >
             <X className="w-5 h-5" />
           </button>
@@ -113,14 +113,14 @@ export const FirebaseModal: React.FC<FirebaseModalProps> = ({
           <div
             className={`p-3 rounded-lg border text-xs font-mono flex items-start gap-2.5 ${
               isConnected
-                ? "bg-emerald-950/30 border-emerald-800/60 text-emerald-300"
-                : "bg-amber-950/30 border-amber-800/60 text-amber-300"
+                ? "bg-emerald-50 dark:bg-emerald-950/30 border-emerald-200 dark:border-emerald-800/60 text-emerald-800 dark:text-emerald-300"
+                : "bg-amber-50 dark:bg-amber-950/30 border-amber-200 dark:border-amber-800/60 text-amber-800 dark:text-amber-300"
             }`}
           >
             {isConnected ? (
-              <CheckCircle className="w-4 h-4 text-emerald-400 shrink-0 mt-0.5" />
+              <CheckCircle className="w-4 h-4 text-emerald-600 dark:text-emerald-400 shrink-0 mt-0.5" />
             ) : (
-              <AlertTriangle className="w-4 h-4 text-amber-400 shrink-0 mt-0.5" />
+              <AlertTriangle className="w-4 h-4 text-amber-600 dark:text-amber-400 shrink-0 mt-0.5" />
             )}
             <div>
               <p className="font-semibold">
@@ -128,7 +128,7 @@ export const FirebaseModal: React.FC<FirebaseModalProps> = ({
                   ? `Active Cloud Sync (${projectId || "Connected"})`
                   : "Currently in Local Offline Mode"}
               </p>
-              <p className="text-slate-400 mt-0.5 text-[11px]">
+              <p className="text-slate-600 dark:text-slate-400 mt-0.5 text-[11px]">
                 {isConnected
                   ? "All updates persist immediately to your Firebase Firestore document and local cache."
                   : "Notes are currently stored securely in your browser's LocalStorage. Enter your Firebase web credentials below to enable cloud backup & live sync."}
@@ -137,13 +137,13 @@ export const FirebaseModal: React.FC<FirebaseModalProps> = ({
           </div>
 
           {syncError && (
-            <div className="p-2.5 bg-rose-950/40 border border-rose-900/80 rounded-lg text-xs font-mono text-rose-300">
+            <div className="p-2.5 bg-rose-50 dark:bg-rose-950/40 border border-rose-200 dark:border-rose-900/80 rounded-lg text-xs font-mono text-rose-700 dark:text-rose-300">
               Sync Error: {syncError}
             </div>
           )}
 
           {statusMessage && (
-            <div className="p-2.5 bg-indigo-950/40 border border-indigo-900/80 rounded-lg text-xs font-mono text-indigo-300">
+            <div className="p-2.5 bg-indigo-50 dark:bg-indigo-950/40 border border-indigo-200 dark:border-indigo-900/80 rounded-lg text-xs font-mono text-indigo-700 dark:text-indigo-300">
               {statusMessage}
             </div>
           )}
@@ -151,7 +151,7 @@ export const FirebaseModal: React.FC<FirebaseModalProps> = ({
           {/* Form */}
           <form onSubmit={handleSave} className="space-y-3">
             <div>
-              <label className="block text-[11px] font-mono text-slate-400 mb-1">
+              <label className="block text-[11px] font-mono text-slate-600 dark:text-slate-400 mb-1">
                 Firebase Project ID *
               </label>
               <input
@@ -160,12 +160,12 @@ export const FirebaseModal: React.FC<FirebaseModalProps> = ({
                 onChange={(e) => setProjectId(e.target.value)}
                 placeholder="my-work-notes-app"
                 required
-                className="w-full px-3 py-1.5 text-xs font-mono rounded-lg bg-slate-800/80 border border-slate-700 text-slate-200 placeholder-slate-600 focus:outline-none focus:border-indigo-500"
+                className="w-full px-3 py-1.5 text-xs font-mono rounded-lg bg-slate-50 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-slate-200 placeholder-slate-400 dark:placeholder-slate-600 focus:outline-none focus:border-indigo-500 focus:bg-white dark:focus:bg-slate-800"
               />
             </div>
 
             <div>
-              <label className="block text-[11px] font-mono text-slate-400 mb-1">
+              <label className="block text-[11px] font-mono text-slate-600 dark:text-slate-400 mb-1">
                 API Key (Web API Key) *
               </label>
               <input
@@ -174,13 +174,13 @@ export const FirebaseModal: React.FC<FirebaseModalProps> = ({
                 onChange={(e) => setApiKey(e.target.value)}
                 placeholder="AIzaSy..."
                 required
-                className="w-full px-3 py-1.5 text-xs font-mono rounded-lg bg-slate-800/80 border border-slate-700 text-slate-200 placeholder-slate-600 focus:outline-none focus:border-indigo-500"
+                className="w-full px-3 py-1.5 text-xs font-mono rounded-lg bg-slate-50 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-slate-200 placeholder-slate-400 dark:placeholder-slate-600 focus:outline-none focus:border-indigo-500 focus:bg-white dark:focus:bg-slate-800"
               />
             </div>
 
             <div className="grid grid-cols-2 gap-2">
               <div>
-                <label className="block text-[11px] font-mono text-slate-400 mb-1">
+                <label className="block text-[11px] font-mono text-slate-600 dark:text-slate-400 mb-1">
                   Auth Domain
                 </label>
                 <input
@@ -188,11 +188,11 @@ export const FirebaseModal: React.FC<FirebaseModalProps> = ({
                   value={authDomain}
                   onChange={(e) => setAuthDomain(e.target.value)}
                   placeholder="project.firebaseapp.com"
-                  className="w-full px-3 py-1.5 text-xs font-mono rounded-lg bg-slate-800/80 border border-slate-700 text-slate-200 placeholder-slate-600 focus:outline-none focus:border-indigo-500"
+                  className="w-full px-3 py-1.5 text-xs font-mono rounded-lg bg-slate-50 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-slate-200 placeholder-slate-400 dark:placeholder-slate-600 focus:outline-none focus:border-indigo-500 focus:bg-white dark:focus:bg-slate-800"
                 />
               </div>
               <div>
-                <label className="block text-[11px] font-mono text-slate-400 mb-1">
+                <label className="block text-[11px] font-mono text-slate-600 dark:text-slate-400 mb-1">
                   App ID
                 </label>
                 <input
@@ -200,13 +200,13 @@ export const FirebaseModal: React.FC<FirebaseModalProps> = ({
                   value={appId}
                   onChange={(e) => setAppId(e.target.value)}
                   placeholder="1:123456:web:abcd"
-                  className="w-full px-3 py-1.5 text-xs font-mono rounded-lg bg-slate-800/80 border border-slate-700 text-slate-200 placeholder-slate-600 focus:outline-none focus:border-indigo-500"
+                  className="w-full px-3 py-1.5 text-xs font-mono rounded-lg bg-slate-50 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-slate-200 placeholder-slate-400 dark:placeholder-slate-600 focus:outline-none focus:border-indigo-500 focus:bg-white dark:focus:bg-slate-800"
                 />
               </div>
             </div>
 
             <div>
-              <label className="block text-[11px] font-mono text-slate-400 mb-1">
+              <label className="block text-[11px] font-mono text-slate-600 dark:text-slate-400 mb-1">
                 Measurement ID (Optional)
               </label>
               <input
@@ -214,7 +214,7 @@ export const FirebaseModal: React.FC<FirebaseModalProps> = ({
                 value={measurementId}
                 onChange={(e) => setMeasurementId(e.target.value)}
                 placeholder="G-XXXXXXX"
-                className="w-full px-3 py-1.5 text-xs font-mono rounded-lg bg-slate-800/80 border border-slate-700 text-slate-200 placeholder-slate-600 focus:outline-none focus:border-indigo-500"
+                className="w-full px-3 py-1.5 text-xs font-mono rounded-lg bg-slate-50 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-slate-200 placeholder-slate-400 dark:placeholder-slate-600 focus:outline-none focus:border-indigo-500 focus:bg-white dark:focus:bg-slate-800"
               />
             </div>
 
@@ -230,7 +230,7 @@ export const FirebaseModal: React.FC<FirebaseModalProps> = ({
                     setAppId("");
                     setMeasurementId("");
                   }}
-                  className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-mono text-rose-400 hover:text-rose-300 hover:bg-rose-950/30 rounded-lg border border-rose-900/50 transition"
+                  className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-mono text-rose-600 dark:text-rose-400 hover:text-rose-700 dark:hover:text-rose-300 hover:bg-rose-50 dark:hover:bg-rose-950/30 rounded-lg border border-rose-200 dark:border-rose-900/50 transition"
                 >
                   <Trash2 className="w-3.5 h-3.5" />
                   <span>Disconnect</span>
@@ -245,14 +245,14 @@ export const FirebaseModal: React.FC<FirebaseModalProps> = ({
                 <button
                   type="button"
                   onClick={onClose}
-                  className="px-3 py-1.5 text-xs font-mono text-slate-400 hover:text-slate-200 rounded-lg hover:bg-slate-800"
+                  className="px-3 py-1.5 text-xs font-mono text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 transition"
                 >
                   Close
                 </button>
                 <button
                   type="submit"
                   disabled={isSaving}
-                  className="px-4 py-1.5 text-xs font-mono font-medium rounded-lg bg-indigo-600 hover:bg-indigo-500 text-white transition disabled:opacity-50"
+                  className="px-4 py-1.5 text-xs font-mono font-medium rounded-lg bg-indigo-600 hover:bg-indigo-500 text-white transition disabled:opacity-50 shadow-sm"
                 >
                   {isSaving ? "Connecting..." : "Save & Sync"}
                 </button>
