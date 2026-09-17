@@ -18,7 +18,9 @@ import {
   Layout,
   Columns,
   Layers,
+  Lock,
 } from "lucide-react";
+import { useRouter } from "next/navigation";
 
 interface NavbarProps {
   viewMode: "focus" | "board" | "notepad";
@@ -57,6 +59,22 @@ export const Navbar: React.FC<NavbarProps> = ({
   setDarkMode,
   stats,
 }) => {
+  const router = useRouter();
+  const [isLoggingOut, setIsLoggingOut] = useState(false);
+
+  const handleLogout = async () => {
+    setIsLoggingOut(true);
+    try {
+      await fetch("/api/auth/logout", { method: "POST" });
+      router.push("/login");
+      router.refresh();
+    } catch {
+      router.push("/login");
+    } finally {
+      setIsLoggingOut(false);
+    }
+  };
+
   return (
     <header className="sticky top-0 z-30 bg-white/95 dark:bg-slate-900/95 border-b border-slate-200 dark:border-slate-800 text-slate-800 dark:text-slate-100 shrink-0 select-none backdrop-blur-sm">
       <div className="w-full px-3 sm:px-4">
@@ -233,6 +251,16 @@ export const Navbar: React.FC<NavbarProps> = ({
               title="Toggle theme"
             >
               {darkMode ? <Sun className="w-4 h-4 text-amber-400" /> : <Moon className="w-4 h-4 text-indigo-600" />}
+            </button>
+
+            {/* Lock Workspace (Sign Out) */}
+            <button
+              onClick={handleLogout}
+              disabled={isLoggingOut}
+              className="p-1.5 rounded-lg text-slate-600 dark:text-slate-400 hover:text-rose-600 dark:hover:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-950/40 border border-slate-200 dark:border-slate-700/60 transition disabled:opacity-50"
+              title="Lock Workspace (Sign Out)"
+            >
+              <Lock className="w-4 h-4" />
             </button>
           </div>
         </div>

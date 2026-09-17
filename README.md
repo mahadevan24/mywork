@@ -55,6 +55,20 @@ NEXT_PUBLIC_FIREBASE_APP_ID=...
 
 ---
 
+## 🔒 Workspace Security & Password Protection
+
+The workspace is protected with a single-user login screen. Configure your password via environment variables:
+
+```env
+# .env or .env.local
+APP_PASSWORD=your_secure_password
+AUTH_SECRET=your_random_secret_token
+```
+
+When visiting the workspace, unauthenticated sessions are automatically redirected to `/login`. Upon successful password authentication, an `httpOnly` secure session cookie is created. You can lock the workspace anytime by clicking the **Lock** icon in the header.
+
+---
+
 ## 🏃 Running Locally
 
 ```bash
