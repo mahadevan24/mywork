@@ -9,8 +9,11 @@ export function serializeWorkpadToNotepad(state: WorkpadState): string {
       let line = t.title;
       if (t.completed) {
         line += " (done)";
-      } else if (t.priority === "urgent") {
+      }
+      if (t.priority === "urgent") {
         line += " ###########";
+      } else if (t.priority === "high") {
+        line += " !high";
       }
       return line;
     });
@@ -30,15 +33,15 @@ export function serializeWorkpadToNotepad(state: WorkpadState): string {
 
       for (const t of sec.tasks) {
         let taskPrefix = "- ";
-        if (t.priority === "urgent" || t.priority === "high") {
+        if (t.priority === "urgent") {
           taskPrefix = "## ";
+        } else if (t.priority === "high") {
+          taskPrefix = "!high - ";
         }
 
         let taskLine = `${taskPrefix}${t.title}`;
         if (t.completed) {
           taskLine += " (done)";
-        } else if (t.priority === "urgent" && taskPrefix !== "## ") {
-          taskLine += " ###########";
         }
         secLines.push(taskLine);
 
@@ -134,13 +137,17 @@ export function parseNotepadToWorkpad(rawText: string): WorkpadState {
       completed = false;
       title = title.replace(/^\[ \]/i, "").trim();
     }
-    if (/#{3,}/.test(title)) {
+    if (/#{3,}/.test(title) || /!urgent/i.test(title) || /\(urgent\)/i.test(title)) {
       priority = "urgent";
-      title = title.replace(/#{3,}/g, "").trim();
+      title = title.replace(/#{3,}/g, "").replace(/!urgent/gi, "").replace(/\(urgent\)/gi, "").trim();
     }
     if (title.startsWith("## ")) {
       priority = "urgent";
       title = title.replace(/^##\s+/, "").trim();
+    }
+    if (/!high/i.test(title) || /\(high\)/i.test(title)) {
+      priority = "high";
+      title = title.replace(/!high/gi, "").replace(/\(high\)/gi, "").trim();
     }
 
     // Check if line is a subtask (starts with `* ` or indented with whitespace)
