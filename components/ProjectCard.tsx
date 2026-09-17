@@ -67,7 +67,12 @@ export const ProjectCard: React.FC<ProjectCardProps> = ({
       tagMatches.forEach((t) => tags.push(t.replace("#", "").toLowerCase()));
     }
 
-    onAddTask(section.id, newTaskTitle.trim(), newPriority, tags, []);
+    const cleanTitle = newTaskTitle
+      .replace(/#([a-zA-Z0-9_\-]+)/g, "")
+      .trim()
+      .replace(/\s+/g, " ");
+
+    onAddTask(section.id, cleanTitle || newTaskTitle.trim(), newPriority, tags, []);
     setNewTaskTitle("");
     setNewPriority("normal");
   };

@@ -31,18 +31,30 @@ export const QuickTasks: React.FC<QuickTasksProps> = ({
   const [priority, setPriority] = useState<Priority>("normal");
   const [filter, setFilter] = useState<"all" | "active" | "completed">("all");
 
+  const handleAddItem = () => {
+    if (!newTitle.trim()) return;
+
+    const tags: string[] = [];
+    const tagMatches = newTitle.match(/#([a-zA-Z0-9_\-]+)/g);
+    if (tagMatches) {
+      tagMatches.forEach((t) => tags.push(t.replace("#", "").toLowerCase()));
+    }
+
+    // Clean hashtag tokens from title if any were parsed
+    const cleanTitle = newTitle
+      .replace(/#([a-zA-Z0-9_\-]+)/g, "")
+      .trim()
+      .replace(/\s+/g, " ");
+
+    onAdd(cleanTitle || newTitle.trim(), priority, tags);
+    setNewTitle("");
+    setPriority("normal");
+  };
+
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === "Enter" && newTitle.trim()) {
+    if (e.key === "Enter") {
       e.preventDefault();
-      // Auto-detect tags like #bastion #fix
-      const tags: string[] = [];
-      const tagMatches = newTitle.match(/#([a-zA-Z0-9_\-]+)/g);
-      if (tagMatches) {
-        tagMatches.forEach((t) => tags.push(t.replace("#", "").toLowerCase()));
-      }
-      onAdd(newTitle.trim(), priority, tags);
-      setNewTitle("");
-      setPriority("normal");
+      handleAddItem();
     }
   };
 
@@ -113,7 +125,7 @@ export const QuickTasks: React.FC<QuickTasksProps> = ({
             value={newTitle}
             onChange={(e) => setNewTitle(e.target.value)}
             onKeyDown={handleKeyDown}
-            placeholder="Add quick item (e.g., 'Stop dev oce mails', 'BASTION request'). Press Enter"
+            placeholder="Add quick item with #tags (e.g., 'Stop dev oce mails #work', 'BASTION request #access'). Press Enter"
             className="w-full pl-3 pr-24 py-2 text-xs rounded-lg bg-slate-800/80 border border-slate-700 text-slate-200 placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 font-mono"
           />
 
@@ -132,13 +144,7 @@ export const QuickTasks: React.FC<QuickTasksProps> = ({
         </div>
 
         <button
-          onClick={() => {
-            if (newTitle.trim()) {
-              onAdd(newTitle.trim(), priority, []);
-              setNewTitle("");
-              setPriority("normal");
-            }
-          }}
+          onClick={handleAddItem}
           disabled={!newTitle.trim()}
           className="px-3 py-2 text-xs font-medium rounded-lg bg-indigo-600 hover:bg-indigo-500 disabled:opacity-50 text-white transition flex items-center gap-1 shrink-0"
         >
