@@ -11,7 +11,7 @@ import { FirebaseModal } from "@/components/FirebaseModal";
 import { ImportExportModal } from "@/components/ImportExportModal";
 import { NewSectionModal } from "@/components/NewSectionModal";
 import confetti from "canvas-confetti";
-import { Plus, Terminal, Layers, Sparkles, CheckCircle2, ChevronRight } from "lucide-react";
+import { Plus, Layers, Sparkles, CheckCircle2, ChevronRight } from "lucide-react";
 
 export default function Home() {
   const {
@@ -40,18 +40,17 @@ export default function Home() {
   const [viewMode, setViewMode] = useState<"focus" | "board" | "notepad">("focus");
   const [selectedSectionId, setSelectedSectionId] = useState<string>("");
   const [searchQuery, setSearchQuery] = useState("");
-  const [darkMode, setDarkMode] = useState(true);
+  // Theme state: defaults to dark unless 'light' is specified in localStorage
+  const [darkMode, setDarkMode] = useState(() => {
+    if (typeof window !== "undefined") {
+      try {
+        const storedTheme = localStorage.getItem("devnotes_theme");
+        if (storedTheme) return storedTheme === "dark";
+      } catch (e) {}
+    }
+    return true;
+  });
   const [streamTabFilter, setStreamTabFilter] = useState<"all" | "active" | "completed">("all");
-
-  // Sync theme with localStorage and documentElement
-  useEffect(() => {
-    try {
-      const storedTheme = localStorage.getItem("devnotes_theme");
-      if (storedTheme) {
-        setDarkMode(storedTheme === "dark");
-      }
-    } catch (e) {}
-  }, []);
 
   useEffect(() => {
     try {
@@ -154,17 +153,6 @@ export default function Home() {
     toggleQuickTodo(id);
   };
 
-  if (!isLoaded) {
-    return (
-      <div className="h-screen w-screen bg-slate-950 flex flex-col items-center justify-center text-slate-400 font-mono gap-3">
-        <div className="h-8 w-8 rounded-lg bg-indigo-600 animate-spin flex items-center justify-center">
-          <Terminal className="w-4 h-4 text-white" />
-        </div>
-        <p className="text-sm">Initializing DevNotes WorkPad...</p>
-      </div>
-    );
-  }
-
   // Active section for direct focus view
   const activeSection =
     state.sections.find((s) => s.id === selectedSectionId) || state.sections[0];
@@ -238,7 +226,7 @@ export default function Home() {
                 className={`group flex items-center gap-2 px-2.5 py-1 rounded-lg text-xs font-mono border transition-all shrink-0 ${
                   isSelected
                     ? "bg-indigo-50 dark:bg-indigo-950/80 text-indigo-700 dark:text-white border-indigo-300 dark:border-indigo-500/70 shadow-sm ring-1 ring-indigo-400/30 dark:ring-indigo-500/40 font-semibold"
-                    : "bg-white dark:bg-slate-900/80 text-slate-700 dark:text-slate-300 border-slate-200 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-850 hover:border-slate-300 dark:hover:border-slate-700 hover:text-slate-900 dark:hover:text-white"
+                    : "bg-white dark:bg-slate-900/80 text-slate-700 dark:text-slate-300 border-slate-200 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-800 hover:border-slate-300 dark:hover:border-slate-700 hover:text-slate-900 dark:hover:text-white"
                 }`}
                 title={`Open "${sec.title}" (Ctrl+${idx + 1})`}
               >

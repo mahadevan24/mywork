@@ -1,3 +1,5 @@
+"use client";
+
 import { FirebaseSettings, WorkpadState } from "@/types/notes";
 import { FirebaseApp, getApps, initializeApp } from "firebase/app";
 import {

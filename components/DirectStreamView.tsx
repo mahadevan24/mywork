@@ -265,7 +265,7 @@ export const DirectStreamView: React.FC<DirectStreamViewProps> = ({
                       ? "bg-rose-50 border-rose-200 dark:bg-rose-950/20 dark:border-rose-900/60 shadow-sm"
                       : task.priority === "high"
                       ? "bg-amber-50 border-amber-200 dark:bg-amber-950/20 dark:border-amber-900/50"
-                      : "bg-slate-50/70 border-slate-200 hover:border-slate-300 dark:bg-slate-850/60 dark:border-slate-800 dark:hover:border-slate-700"
+                      : "bg-slate-50/70 border-slate-200 hover:border-slate-300 dark:bg-slate-800/40 dark:border-slate-800 dark:hover:border-slate-700"
                   }`}
                 >
                   <div className="flex items-start justify-between gap-2">

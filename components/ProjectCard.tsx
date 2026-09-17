@@ -106,7 +106,7 @@ export const ProjectCard: React.FC<ProjectCardProps> = ({
       className={`bg-white dark:bg-slate-900/90 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm overflow-hidden flex flex-col transition hover:border-slate-300 dark:hover:border-slate-700/80 ${className}`}
     >
       {/* Card Header */}
-      <div className="p-4 border-b border-slate-200 dark:border-slate-800/80 bg-slate-50 dark:bg-slate-850/50">
+      <div className="p-4 border-b border-slate-200 dark:border-slate-800/80 bg-slate-50 dark:bg-slate-800/50">
         <div className="flex items-start justify-between gap-3">
           <div className="flex items-center gap-2.5 flex-1 min-w-0">
             {/* Color Accent Indicator */}
