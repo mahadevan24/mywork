@@ -7,11 +7,12 @@ import { QuickTasks } from "@/components/QuickTasks";
 import { DirectStreamView } from "@/components/DirectStreamView";
 import { ProjectCard } from "@/components/ProjectCard";
 import { ScratchpadView } from "@/components/ScratchpadView";
+import { StandupFocusView } from "@/components/StandupFocusView";
 import { FirebaseModal } from "@/components/FirebaseModal";
 import { ImportExportModal } from "@/components/ImportExportModal";
 import { NewSectionModal } from "@/components/NewSectionModal";
 import confetti from "canvas-confetti";
-import { Plus, Layers, Sparkles, CheckCircle2, ChevronRight } from "lucide-react";
+import { Plus, Layers, Sparkles, CheckCircle2 } from "lucide-react";
 
 export default function Home() {
   const {
@@ -37,7 +38,7 @@ export default function Home() {
     disconnectFirebase,
   } = useNotesStore();
 
-  const [viewMode, setViewMode] = useState<"focus" | "board" | "notepad">("focus");
+  const [viewMode, setViewMode] = useState<"standup" | "focus" | "board" | "notepad">("focus");
   const [selectedSectionId, setSelectedSectionId] = useState<string>("");
   const [searchQuery, setSearchQuery] = useState("");
   // Theme state: defaults to dark unless 'light' is specified in localStorage
@@ -110,6 +111,11 @@ export default function Home() {
       } else if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "b") {
         e.preventDefault();
         setViewMode((prev) => (prev === "focus" ? "board" : "focus"));
+      } else if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "j") {
+        e.preventDefault();
+        setViewMode((prev) => (prev === "standup" ? "focus" : "standup"));
+      } else if (e.key === "Escape") {
+        setViewMode((prev) => (prev === "standup" ? "focus" : prev));
       } else if ((e.ctrlKey || e.metaKey) && !e.shiftKey && !e.altKey) {
         const num = parseInt(e.key, 10);
         if (!isNaN(num) && num >= 1 && num <= 9) {
@@ -189,167 +195,183 @@ export default function Home() {
       />
 
       {/* Direct Stream Selector Tabs Bar (Instant 1-Click Access) */}
-      <div className="bg-slate-100/90 dark:bg-slate-950/90 border-b border-slate-200 dark:border-slate-800/90 px-3 py-1.5 flex items-center justify-between gap-2 shrink-0 overflow-x-auto">
-        <div className="flex items-center gap-1.5 min-w-0 overflow-x-auto scrollbar-none py-0.5">
-          {/* Streams Tab Label & Filter */}
-          <div className="flex items-center gap-1 text-[11px] font-mono text-slate-500 dark:text-slate-400 pr-2 border-r border-slate-200 dark:border-slate-800 shrink-0">
-            <span className="uppercase tracking-wider font-semibold text-slate-700 dark:text-slate-300">
-              Streams:
-            </span>
+      {viewMode !== "standup" && (
+        <div className="bg-slate-100/90 dark:bg-slate-950/90 border-b border-slate-200 dark:border-slate-800/90 px-3 py-1.5 flex items-center justify-between gap-2 shrink-0 overflow-x-auto">
+          <div className="flex items-center gap-1.5 min-w-0 overflow-x-auto scrollbar-none py-0.5">
+            {/* Streams Tab Label & Filter */}
+            <div className="flex items-center gap-1 text-[11px] font-mono text-slate-500 dark:text-slate-400 pr-2 border-r border-slate-200 dark:border-slate-800 shrink-0">
+              <span className="uppercase tracking-wider font-semibold text-slate-700 dark:text-slate-300">
+                Streams:
+              </span>
+              <button
+                onClick={() =>
+                  setStreamTabFilter((prev) =>
+                    prev === "all" ? "active" : prev === "active" ? "completed" : "all"
+                  )
+                }
+                className="text-[10px] px-1.5 py-0.5 rounded bg-slate-200 hover:bg-slate-300 text-slate-700 dark:bg-slate-800 dark:hover:bg-slate-700 dark:text-slate-300 transition font-mono"
+                title="Click to toggle filter: All / Active / Completed"
+              >
+                [{streamTabFilter}]
+              </button>
+            </div>
+
+            {/* Stream Direct Tabs */}
+            {filteredSections.map((sec, idx) => {
+              const isSelected = activeSection?.id === sec.id && viewMode === "focus";
+              const completedCount = sec.tasks.filter((t) => t.completed).length;
+              const totalCount = sec.tasks.length;
+              const isDone = totalCount > 0 && completedCount === totalCount;
+
+              return (
+                <button
+                  key={sec.id}
+                  onClick={() => {
+                    setSelectedSectionId(sec.id);
+                    setViewMode("focus");
+                  }}
+                  className={`group flex items-center gap-2 px-2.5 py-1 rounded-lg text-xs font-mono border transition-all shrink-0 ${
+                    isSelected
+                      ? "bg-indigo-50 dark:bg-indigo-950/80 text-indigo-700 dark:text-white border-indigo-300 dark:border-indigo-500/70 shadow-sm ring-1 ring-indigo-400/30 dark:ring-indigo-500/40 font-semibold"
+                      : "bg-white dark:bg-slate-900/80 text-slate-700 dark:text-slate-300 border-slate-200 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-800 hover:border-slate-300 dark:hover:border-slate-700 hover:text-slate-900 dark:hover:text-white"
+                  }`}
+                  title={`Open "${sec.title}" (Ctrl+${idx + 1})`}
+                >
+                  {/* Dot color indicator */}
+                  <span
+                    className="w-2 h-2 rounded-full shrink-0"
+                    style={{ backgroundColor: sec.color || "#6366f1" }}
+                  />
+
+                  <span className="truncate max-w-[150px]">{sec.title}</span>
+
+                  {/* Progress / Status pill */}
+                  <span
+                    className={`text-[10px] px-1.5 py-0.2 rounded-full font-mono ${
+                      isDone
+                        ? "bg-emerald-100 text-emerald-700 border border-emerald-200 dark:bg-emerald-950 dark:text-emerald-300 dark:border-emerald-800/60"
+                        : isSelected
+                        ? "bg-indigo-100 text-indigo-700 dark:bg-indigo-900 dark:text-indigo-200"
+                        : "bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-400"
+                    }`}
+                  >
+                    {completedCount}/{totalCount}
+                  </span>
+
+                  {/* Shortcut tag for first 9 */}
+                  {idx < 9 && (
+                    <span className="text-[9px] text-slate-400 dark:text-slate-500 opacity-60 group-hover:opacity-100 hidden xl:inline font-mono">
+                      ^{idx + 1}
+                    </span>
+                  )}
+                </button>
+              );
+            })}
+
+            {/* Quick Add Stream Button directly on tab bar */}
             <button
-              onClick={() =>
-                setStreamTabFilter((prev) =>
-                  prev === "all" ? "active" : prev === "active" ? "completed" : "all"
-                )
-              }
-              className="text-[10px] px-1.5 py-0.5 rounded bg-slate-200 hover:bg-slate-300 text-slate-700 dark:bg-slate-800 dark:hover:bg-slate-700 dark:text-slate-300 transition font-mono"
-              title="Click to toggle filter: All / Active / Completed"
+              onClick={() => setIsNewSectionModalOpen(true)}
+              className="flex items-center gap-1 px-2.5 py-1 rounded-lg text-xs font-mono bg-white dark:bg-slate-900 hover:bg-slate-50 dark:hover:bg-slate-800 text-indigo-600 dark:text-indigo-400 hover:text-indigo-700 dark:hover:text-indigo-300 border border-dashed border-slate-300 dark:border-slate-700 transition shrink-0"
+              title="Create a new stream section"
             >
-              [{streamTabFilter}]
+              <Plus className="w-3.5 h-3.5" />
+              <span>New Stream</span>
             </button>
           </div>
-
-          {/* Stream Direct Tabs */}
-          {filteredSections.map((sec, idx) => {
-            const isSelected = activeSection?.id === sec.id && viewMode === "focus";
-            const completedCount = sec.tasks.filter((t) => t.completed).length;
-            const totalCount = sec.tasks.length;
-            const isDone = totalCount > 0 && completedCount === totalCount;
-
-            return (
-              <button
-                key={sec.id}
-                onClick={() => {
-                  setSelectedSectionId(sec.id);
-                  setViewMode("focus");
-                }}
-                className={`group flex items-center gap-2 px-2.5 py-1 rounded-lg text-xs font-mono border transition-all shrink-0 ${
-                  isSelected
-                    ? "bg-indigo-50 dark:bg-indigo-950/80 text-indigo-700 dark:text-white border-indigo-300 dark:border-indigo-500/70 shadow-sm ring-1 ring-indigo-400/30 dark:ring-indigo-500/40 font-semibold"
-                    : "bg-white dark:bg-slate-900/80 text-slate-700 dark:text-slate-300 border-slate-200 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-800 hover:border-slate-300 dark:hover:border-slate-700 hover:text-slate-900 dark:hover:text-white"
-                }`}
-                title={`Open "${sec.title}" (Ctrl+${idx + 1})`}
-              >
-                {/* Dot color indicator */}
-                <span
-                  className="w-2 h-2 rounded-full shrink-0"
-                  style={{ backgroundColor: sec.color || "#6366f1" }}
-                />
-
-                <span className="truncate max-w-[150px]">{sec.title}</span>
-
-                {/* Progress / Status pill */}
-                <span
-                  className={`text-[10px] px-1.5 py-0.2 rounded-full font-mono ${
-                    isDone
-                      ? "bg-emerald-100 text-emerald-700 border border-emerald-200 dark:bg-emerald-950 dark:text-emerald-300 dark:border-emerald-800/60"
-                      : isSelected
-                      ? "bg-indigo-100 text-indigo-700 dark:bg-indigo-900 dark:text-indigo-200"
-                      : "bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-400"
-                  }`}
-                >
-                  {completedCount}/{totalCount}
-                </span>
-
-                {/* Shortcut tag for first 9 */}
-                {idx < 9 && (
-                  <span className="text-[9px] text-slate-400 dark:text-slate-500 opacity-60 group-hover:opacity-100 hidden xl:inline font-mono">
-                    ^{idx + 1}
-                  </span>
-                )}
-              </button>
-            );
-          })}
-
-          {/* Quick Add Stream Button directly on tab bar */}
-          <button
-            onClick={() => setIsNewSectionModalOpen(true)}
-            className="flex items-center gap-1 px-2.5 py-1 rounded-lg text-xs font-mono bg-white dark:bg-slate-900 hover:bg-slate-50 dark:hover:bg-slate-800 text-indigo-600 dark:text-indigo-400 hover:text-indigo-700 dark:hover:text-indigo-300 border border-dashed border-slate-300 dark:border-slate-700 transition shrink-0"
-            title="Create a new stream section"
-          >
-            <Plus className="w-3.5 h-3.5" />
-            <span>New Stream</span>
-          </button>
         </div>
-      </div>
+      )}
 
       {/* Main Screen-Fitted Workspace (Zero Outer Page Scroll) */}
-      <main className="flex-1 overflow-hidden flex divide-x divide-slate-200/80 dark:divide-slate-800/80 p-2 sm:p-2.5 gap-2 sm:gap-2.5 min-h-0 bg-slate-100 dark:bg-slate-950/20">
-        {/* Left Column: Persistent Standup & Quick Items (~360px) */}
-        <div className="w-72 sm:w-80 lg:w-96 shrink-0 h-full overflow-hidden flex flex-col">
-          <QuickTasks
+      {viewMode === "standup" ? (
+        <main className="flex-1 overflow-hidden p-2 sm:p-2.5 min-h-0 bg-slate-100 dark:bg-slate-950/20">
+          <StandupFocusView
             tasks={state.quickTodos}
             onToggle={handleToggleQuickWithConfetti}
             onAdd={addQuickTodo}
             onDelete={deleteQuickTodo}
+            onExitFocus={() => setViewMode("focus")}
             searchQuery={searchQuery}
-            className="h-full"
           />
-        </div>
-
-        {/* Right / Main Pane: Direct Active Stream or Multi-Column Board or Scratchpad */}
-        <div className="flex-1 h-full overflow-hidden flex flex-col min-w-0">
-          {viewMode === "notepad" ? (
-            <ScratchpadView
-              state={state}
-              onApplyState={replaceAllState}
-              onSwitchToBoard={() => setViewMode("focus")}
+        </main>
+      ) : (
+        <main className="flex-1 overflow-hidden flex divide-x divide-slate-200/80 dark:divide-slate-800/80 p-2 sm:p-2.5 gap-2 sm:gap-2.5 min-h-0 bg-slate-100 dark:bg-slate-950/20">
+          {/* Left Column: Persistent Standup & Quick Items (~360px) */}
+          <div className="w-72 sm:w-80 lg:w-96 shrink-0 h-full overflow-hidden flex flex-col">
+            <QuickTasks
+              tasks={state.quickTodos}
+              onToggle={handleToggleQuickWithConfetti}
+              onAdd={addQuickTodo}
+              onDelete={deleteQuickTodo}
+              onOpenStandupFocus={() => setViewMode("standup")}
+              searchQuery={searchQuery}
               className="h-full"
             />
-          ) : viewMode === "board" ? (
-            /* Horizontal Multi-Column Board */
-            <div className="h-full overflow-x-auto overflow-y-hidden flex gap-3 pb-1">
-              {state.sections.length === 0 ? (
-                <div className="m-auto text-center p-8 text-slate-500 font-mono text-xs">
-                  No topic streams yet. Click &quot;New Stream&quot; above to create one.
-                </div>
-              ) : (
-                state.sections.map((sec) => (
-                  <ProjectCard
-                    key={sec.id}
-                    section={sec}
-                    onToggleTask={handleToggleTaskWithConfetti}
-                    onToggleSubTask={toggleSubTask}
-                    onAddTask={addTask}
-                    onDeleteTask={deleteTask}
-                    onDeleteSection={deleteSection}
-                    onUpdateNotes={updateSectionNotes}
-                    searchQuery={searchQuery}
-                    className="w-80 shrink-0 h-full flex flex-col"
-                  />
-                ))
-              )}
-            </div>
-          ) : (
-            /* Focus Mode (Direct Stream Command Center) */
-            activeSection ? (
-              <DirectStreamView
-                section={activeSection}
-                onToggleTask={handleToggleTaskWithConfetti}
-                onToggleSubTask={toggleSubTask}
-                onAddTask={addTask}
-                onDeleteTask={deleteTask}
-                onDeleteSection={deleteSection}
-                onUpdateNotes={updateSectionNotes}
-                searchQuery={searchQuery}
+          </div>
+
+          {/* Right / Main Pane: Direct Active Stream or Multi-Column Board or Scratchpad */}
+          <div className="flex-1 h-full overflow-hidden flex flex-col min-w-0">
+            {viewMode === "notepad" ? (
+              <ScratchpadView
+                state={state}
+                onApplyState={replaceAllState}
+                onSwitchToBoard={() => setViewMode("focus")}
+                className="h-full"
               />
-            ) : (
-              <div className="h-full bg-white dark:bg-slate-900/60 rounded-xl border border-slate-200 dark:border-slate-800 flex flex-col items-center justify-center p-8 text-center shadow-sm">
-                <p className="text-slate-500 dark:text-slate-400 font-mono text-sm mb-3">
-                  No work stream topics found.
-                </p>
-                <button
-                  onClick={() => setIsNewSectionModalOpen(true)}
-                  className="px-4 py-2 text-xs font-mono bg-indigo-600 hover:bg-indigo-500 text-white rounded-lg transition inline-flex items-center gap-2 shadow"
-                >
-                  <Plus className="w-4 h-4" />
-                  <span>Create Your First Stream</span>
-                </button>
+            ) : viewMode === "board" ? (
+              /* Horizontal Multi-Column Board */
+              <div className="h-full overflow-x-auto overflow-y-hidden flex gap-3 pb-1">
+                {state.sections.length === 0 ? (
+                  <div className="m-auto text-center p-8 text-slate-500 font-mono text-xs">
+                    No topic streams yet. Click &quot;New Stream&quot; above to create one.
+                  </div>
+                ) : (
+                  state.sections.map((sec) => (
+                    <ProjectCard
+                      key={sec.id}
+                      section={sec}
+                      onToggleTask={handleToggleTaskWithConfetti}
+                      onToggleSubTask={toggleSubTask}
+                      onAddTask={addTask}
+                      onDeleteTask={deleteTask}
+                      onDeleteSection={deleteSection}
+                      onUpdateNotes={updateSectionNotes}
+                      searchQuery={searchQuery}
+                      className="w-80 shrink-0 h-full flex flex-col"
+                    />
+                  ))
+                )}
               </div>
-            )
-          )}
-        </div>
-      </main>
+            ) : (
+              /* Focus Mode (Direct Stream Command Center) */
+              activeSection ? (
+                <DirectStreamView
+                  section={activeSection}
+                  onToggleTask={handleToggleTaskWithConfetti}
+                  onToggleSubTask={toggleSubTask}
+                  onAddTask={addTask}
+                  onDeleteTask={deleteTask}
+                  onDeleteSection={deleteSection}
+                  onUpdateNotes={updateSectionNotes}
+                  searchQuery={searchQuery}
+                />
+              ) : (
+                <div className="h-full bg-white dark:bg-slate-900/60 rounded-xl border border-slate-200 dark:border-slate-800 flex flex-col items-center justify-center p-8 text-center shadow-sm">
+                  <p className="text-slate-500 dark:text-slate-400 font-mono text-sm mb-3">
+                    No work stream topics found.
+                  </p>
+                  <button
+                    onClick={() => setIsNewSectionModalOpen(true)}
+                    className="px-4 py-2 text-xs font-mono bg-indigo-600 hover:bg-indigo-500 text-white rounded-lg transition inline-flex items-center gap-2 shadow"
+                  >
+                    <Plus className="w-4 h-4" />
+                    <span>Create Your First Stream</span>
+                  </button>
+                </div>
+              )
+            )}
+          </div>
+        </main>
+      )}
 
       {/* Ultra-Compact Bottom Status Bar */}
       <footer className="h-7 shrink-0 bg-white/95 dark:bg-slate-950/95 border-t border-slate-200 dark:border-slate-800/80 px-3 text-[11px] font-mono text-slate-500 flex items-center justify-between select-none">
@@ -359,7 +381,7 @@ export default function Home() {
           </span>
           <span className="text-slate-300 dark:text-slate-700 hidden sm:inline">•</span>
           <span className="hidden md:inline text-slate-500">
-            Shortcuts: <kbd className="px-1 py-0.2 rounded bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-transparent">Ctrl+K</kbd> Search • <kbd className="px-1 py-0.2 rounded bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-transparent">Ctrl+1..9</kbd> Jump stream • <kbd className="px-1 py-0.2 rounded bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-transparent">Ctrl+B</kbd> Toggle board
+            Shortcuts: <kbd className="px-1 py-0.2 rounded bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-transparent">Ctrl+K</kbd> Search • <kbd className="px-1 py-0.2 rounded bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-transparent">Ctrl+1..9</kbd> Jump stream • <kbd className="px-1 py-0.2 rounded bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-transparent">Ctrl+B</kbd> Toggle board • <kbd className="px-1 py-0.2 rounded bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-transparent">Ctrl+J</kbd> Standup focus
           </span>
         </div>
 

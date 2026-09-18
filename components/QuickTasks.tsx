@@ -10,6 +10,7 @@ import {
   AlertCircle,
   Zap,
   Filter,
+  Maximize2,
 } from "lucide-react";
 
 interface QuickTasksProps {
@@ -17,6 +18,7 @@ interface QuickTasksProps {
   onToggle: (id: string) => void;
   onAdd: (title: string, priority: Priority, tags: string[]) => void;
   onDelete: (id: string) => void;
+  onOpenStandupFocus?: () => void;
   searchQuery?: string;
   className?: string;
 }
@@ -26,6 +28,7 @@ export const QuickTasks: React.FC<QuickTasksProps> = ({
   onToggle,
   onAdd,
   onDelete,
+  onOpenStandupFocus,
   searchQuery = "",
   className = "",
 }) => {
@@ -92,32 +95,44 @@ export const QuickTasks: React.FC<QuickTasksProps> = ({
           </span>
         </div>
 
-        {/* Filter buttons */}
-        <div className="flex items-center gap-0.5 text-[10px] bg-slate-100 dark:bg-slate-800/80 p-0.5 rounded-lg border border-slate-200 dark:border-slate-700/50 shrink-0 font-mono">
-          <button
-            onClick={() => setFilter("all")}
-            className={`px-2 py-0.5 rounded transition ${
-              filter === "all" ? "bg-indigo-600 text-white" : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200"
-            }`}
-          >
-            All
-          </button>
-          <button
-            onClick={() => setFilter("active")}
-            className={`px-2 py-0.5 rounded transition ${
-              filter === "active" ? "bg-indigo-600 text-white" : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200"
-            }`}
-          >
-            Act ({tasks.length - completedCount})
-          </button>
-          <button
-            onClick={() => setFilter("completed")}
-            className={`px-2 py-0.5 rounded transition ${
-              filter === "completed" ? "bg-indigo-600 text-white" : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200"
-            }`}
-          >
-            Done
-          </button>
+        {/* Filter buttons & Focus Standup button */}
+        <div className="flex items-center gap-1 shrink-0">
+          <div className="flex items-center gap-0.5 text-[10px] bg-slate-100 dark:bg-slate-800/80 p-0.5 rounded-lg border border-slate-200 dark:border-slate-700/50 shrink-0 font-mono">
+            <button
+              onClick={() => setFilter("all")}
+              className={`px-2 py-0.5 rounded transition ${
+                filter === "all" ? "bg-indigo-600 text-white" : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200"
+              }`}
+            >
+              All
+            </button>
+            <button
+              onClick={() => setFilter("active")}
+              className={`px-2 py-0.5 rounded transition ${
+                filter === "active" ? "bg-indigo-600 text-white" : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200"
+              }`}
+            >
+              Act ({tasks.length - completedCount})
+            </button>
+            <button
+              onClick={() => setFilter("completed")}
+              className={`px-2 py-0.5 rounded transition ${
+                filter === "completed" ? "bg-indigo-600 text-white" : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200"
+              }`}
+            >
+              Done
+            </button>
+          </div>
+
+          {onOpenStandupFocus && (
+            <button
+              onClick={onOpenStandupFocus}
+              className="p-1 rounded-md bg-slate-100 hover:bg-amber-50 dark:bg-slate-800 dark:hover:bg-amber-950/40 text-slate-500 hover:text-amber-600 dark:text-slate-400 dark:hover:text-amber-400 border border-slate-200 dark:border-slate-700/60 transition shrink-0"
+              title="Focus on standup items only (Ctrl+J)"
+            >
+              <Maximize2 className="w-3.5 h-3.5" />
+            </button>
+          )}
         </div>
       </div>
 

@@ -19,12 +19,13 @@ import {
   Columns,
   Layers,
   Lock,
+  Zap,
 } from "lucide-react";
 import { useRouter } from "next/navigation";
 
 interface NavbarProps {
-  viewMode: "focus" | "board" | "notepad";
-  setViewMode: (mode: "focus" | "board" | "notepad") => void;
+  viewMode: "standup" | "focus" | "board" | "notepad";
+  setViewMode: (mode: "standup" | "focus" | "board" | "notepad") => void;
   searchQuery: string;
   setSearchQuery: (query: string) => void;
   isFirebaseConnected: boolean;
@@ -153,8 +154,26 @@ export const Navbar: React.FC<NavbarProps> = ({
 
           {/* View Switcher & Action Controls */}
           <div className="flex items-center gap-1.5 shrink-0">
-            {/* 3 View Mode Switchers: Focus, Board, Notepad */}
+            {/* 4 View Mode Switchers: Standup, Focus, Board, Notepad */}
             <div className="flex bg-slate-100 dark:bg-slate-800/90 p-0.5 rounded-lg border border-slate-200 dark:border-slate-700/60 text-xs font-mono">
+              <button
+                onClick={() => setViewMode("standup")}
+                className={`flex items-center gap-1 px-2.5 py-1 rounded transition-all ${
+                  viewMode === "standup"
+                    ? "bg-amber-500 text-slate-950 font-semibold shadow-sm"
+                    : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200"
+                }`}
+                title="Daily Standup Focus Mode (Ctrl+J)"
+              >
+                <Zap
+                  className={`w-3.5 h-3.5 ${
+                    viewMode === "standup"
+                      ? "text-slate-950 fill-slate-950/20"
+                      : "text-amber-500"
+                  }`}
+                />
+                <span className="hidden md:inline">Standup</span>
+              </button>
               <button
                 onClick={() => setViewMode("focus")}
                 className={`flex items-center gap-1 px-2.5 py-1 rounded transition-all ${
